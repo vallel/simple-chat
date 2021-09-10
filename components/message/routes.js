@@ -1,16 +1,24 @@
 const express = require('express');
 const router = express.Router();
+const messageController = require('./controller');
+const httpResponse = require('../../http/response');
 
 router.get('/', (req, res) => {
-    // get messages
+    messageController.getList()
+        .then(data => httpResponse.success(req, res, data, 200))
+        .catch(error => httpResponse.error(req, res, 'Something went wrong 🙁. Please try again later.', 500, error));
 });
 
 router.post('/', (req, res) => {
-    // add message
+    messageController.add(req.body.user, req.body.message)
+        .then(data => httpResponse.success(req, res, data, 201))
+        .catch(error => httpResponse.error(req, res, 'Invalid data provided 😕.', 500, error));
 });
 
 router.delete('/:id', (req, res) => {
-    // delete message
+    messageController.deleteMessage(req.params.id)
+        .then(data => httpResponse.success(req, res, data, 200))
+        .catch(error => httpResponse.error(req, res, 'Unable to delete message.', 500, error));
 });
 
 module.exports = router;

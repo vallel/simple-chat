@@ -3,14 +3,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const mySchema = new Schema({
-    username: {
+    message: {
         type: String,
         required: true,
-        unique: true,
+    },
+    user: {
+        type: Schema.ObjectId,
+        ref: 'user',
+        required: true,
     },
     created: Date,
 });
 
-const model = mongoose.model('user', mySchema);
+const model = mongoose.model('message', mySchema);
 
 module.exports = model;
