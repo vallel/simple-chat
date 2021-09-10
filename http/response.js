@@ -1,30 +1,14 @@
-const statusMessages = {
-    200: 'Done',
-    201: 'Created',
-    400: 'Invalid format',
-    500: 'Internal error',
-};
-
 const success = (req, res, message, statusCode) => {
-    statusCode = statusCode || 200;
-    let statusMessage = '';
-    
-    if (!message && statusMessages[statusCode]) {
-        statusMessage = statusMessages[statusCode];
-    }
-
-    res.status(statusCode).send({
+    res.status(statusCode || 200).send({
         error: '',
-        body: statusMessage,
+        body: message,
     });
 };
 
 const error = (req, res, message, statusCode, details) => {
-    statusCode = statusCode || 500;
-    
     console.error(`[ERROR] ${details}`);
 
-    res.status(statusCode).send({
+    res.status(statusCode || 500).send({
         error: message,
         body: '',
     });
