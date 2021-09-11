@@ -7,7 +7,17 @@ const add = (message) => {
 };
 
 const list = () => {
-    return Model.find();
+    return new Promise((resolve, reject) => {
+        Model.find()
+            .populate('user')
+            .exec((error, populated) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                resolve(populated);
+            });
+    });
 };
 
 const deleteMessage = messageId => {
