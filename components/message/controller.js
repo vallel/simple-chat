@@ -1,21 +1,29 @@
 const messageRepository = require('./repository');
+const socket = require('../../socket').socket;
+const Exception = require('../../http/exception');
 
 const add = (user, message) => {
-    if (!user) {
-        return Promise.reject('User is required');
-    }
+    return new Promise((resolve, reject) => {
+        if (!user) {
+            return reject(new Exception('User is required', `Invalid user ${user}.`));
+        }
+    
+        if (!message) {
+            return reject(new Exception('A message is required', `Invalid message ${message}.`));
+        }
+    
+        const newMessage = {
+            user: user,
+            message: message,
+            created: new Date,
+        };
+    
+        messageRepository.add(newMessage);
 
-    if (!message) {
-        return Promise.reject('A message is required');
-    }
+        socket.io.emit('message', newMessage);
 
-    const newMessage = {
-        user: user,
-        message: message,
-        created: new Date,
-    };
-
-    return messageRepository.add(newMessage);
+        return resolve(newMessage);
+    });
 };
 
 const getList = () => {
