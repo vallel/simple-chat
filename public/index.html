@@ -15,15 +15,25 @@
 </head>
 <body>
     <div id="chat">
-        <section id="messages" class="messages">
-            <div v-for="message in messages" :key="message._id" class="message">
-                <div class="message--user">{{ message.user.username }}</div>
-                <p class="message--content">{{ message.message }}</p>
-            </div>
+        <section class="users-container" v-if="isEmptyUser()">
+            <h2>Select your user:</h2>
+            <ul class="users">
+                <li v-for="user in users" :key="user._id" class="user" v-on:click="selectUser(user._id)">
+                    <span class="user-thumb">{{ user.username.charAt(0) }}</span>{{ user.username }}
+                </li>
+            </ul>
         </section>
-        <section class="new-message-input">
-            <input type="text" name="new-message" id="new-message" placeholder="Write a message..." v-model="newMessage" v-on:keyup.enter="sendMessage">
-            <button class="send-new-message" v-on:click="sendMessage"></button>
+        <section class="messages-container" v-if="!isEmptyUser()">
+            <section id="messages" class="messages">
+                <div v-for="message in messages" :key="message._id" class="message" :class="isCurrentUser(message.user._id) ? 'own-message' : ''">
+                    <div class="message--user" v-if="!isCurrentUser(message.user._id)">{{ message.user.username }}</div>
+                    <p class="message--content">{{ message.message }}</p>
+                </div>
+            </section>
+            <section class="new-message-input">
+                <input type="text" name="new-message" id="new-message" placeholder="Write a message..." v-model="newMessage" v-on:keyup.enter="sendMessage">
+                <button class="send-new-message" v-on:click="sendMessage"></button>
+            </section>
         </section>
     </div>
 

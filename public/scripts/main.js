@@ -5,37 +5,64 @@ const socket = io.connect('http://localhost:3000', {
 const app = new Vue({
     el: '#chat',
     data: {
+        user: '',
+        users: [],
         newMessage: '',
         messages: []
     },
     created: function() {
-        fetch('http://localhost:3000/message')
-            .then(response => response.json())
-            .then(responseData => {
-                if (!responseData.error && responseData.body) {
-                    this.messages = responseData.body;
-                } else {
-                    console.log(responseData.error);
-                }
-            })
-            .catch(error => console.log(error));
+        if (this.isEmptyUser()) {
+            this.getUsers();
+        } else {
+            this.getMessages();
+        }
 
         socket.on('message', (data) => {
             this.messages.push(data);
         });
     },
     updated: function() {
-        this.scrollToEnd();
+        if (!this.isEmptyUser()) {
+            this.scrollToEnd();
+        }
     },
     methods: {
         scrollToEnd: function() {    	
             let container = document.getElementById('messages');
             container.scrollTop = container.scrollHeight;
         },
+        getUsers: function() {
+            fetch('http://localhost:3000/user')
+                .then(response => response.json())
+                .then(responseData => {
+                    if (!responseData.error && responseData.body) {
+                        this.users = responseData.body;
+                    } else {
+                        console.log(responseData.error);
+                    }
+                })
+                .catch(error => console.log(error));
+        },
+        getMessages: function() {
+            fetch('http://localhost:3000/message')
+                .then(response => response.json())
+                .then(responseData => {
+                    if (!responseData.error && responseData.body) {
+                        this.messages = responseData.body;
+                    } else {
+                        console.log(responseData.error);
+                    }
+                })
+                .catch(error => console.log(error));
+        },
         sendMessage: function() {
+            if (!this.user) {
+                return;
+            }
+
             const request = {
                 'message': `${this.newMessage}`,
-                'user': '613ae33dd8f5b3b134762afd' // TODO: get the user id from somewhere
+                'user': `${this.user}`,
             };
 
             fetch('http://localhost:3000/message', {
@@ -49,6 +76,16 @@ const app = new Vue({
             .catch(error => {
                 console.log(error);
             });
+        },
+        isEmptyUser: function() {
+            return !this.user;
+        },
+        isCurrentUser: function(userId) {
+            return userId === this.user;
+        },
+        selectUser: function(userId) {
+            this.user = userId;
+            this.getMessages();
         }
     }
 });
