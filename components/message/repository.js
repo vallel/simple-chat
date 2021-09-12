@@ -1,9 +1,24 @@
+const Exception = require('../../http/exception');
 const Model = require('./model');
 
 const add = (message) => {
-    const newMessage = new Model(message);
+    return new Promise((resolve, reject) => {
+        const newMessage = new Model(message);
+        newMessage.save((error, result) => {
+            if (error) {
+                return reject(new Exception('Could not save the message. Plese try again later.', error));
+            }
 
-    return newMessage.save();
+            Model.findById(result.id).populate('user').exec((error, populated) => {
+                if (error) {
+                    return reject(new Exception('Something went wrong!', error));
+                }
+
+                console.log(populated);
+                return resolve(populated);
+            });
+        });
+    });
 };
 
 const list = () => {

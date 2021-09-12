@@ -18,11 +18,14 @@ const add = (user, message) => {
             created: new Date,
         };
     
-        messageRepository.add(newMessage);
-
-        socket.io.emit('message', newMessage);
-
-        return resolve(newMessage);
+        messageRepository.add(newMessage)
+            .then(data => {
+                socket.io.emit('message', data);
+                return resolve(newMessage);
+            })
+            .catch(error => {
+                return reject(error);
+            });
     });
 };
 
