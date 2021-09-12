@@ -37,6 +37,7 @@
 }
 
 .new-message-input {
+  display: flex;
   padding: 10px;
   border-top: 1px solid #ccc;
 }
@@ -51,4 +52,18 @@
 
 .new-message-input input[type="text"]::placeholder {
   color: #ccc;
+}
+
+.send-new-message {
+  width: 25px;
+  height: 25px;
+  border: none;
+  background: url("../images/send.svg") center no-repeat;
+  align-self: center;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.send-new-message:hover {
+  opacity: 1;
 }

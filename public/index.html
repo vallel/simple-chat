@@ -10,23 +10,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./styles/styles.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <div id="chat">
-        <section class="messages">
+        <section id="messages" class="messages">
             <div v-for="message in messages" :key="message._id" class="message">
                 <div class="message--user">{{ message.user.username }}</div>
                 <p class="message--content">{{ message.message }}</p>
             </div>
         </section>
         <section class="new-message-input">
-            <input type="text" name="new-message" id="new-message" placeholder="Write a message...">
+            <input type="text" name="new-message" id="new-message" placeholder="Write a message..." v-model="newMessage" v-on:keyup.enter="sendMessage">
+            <button class="send-new-message" v-on:click="sendMessage"></button>
         </section>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <script src="./js/main.js"></script>
+    <script src="./scripts/main.js"></script>
 </body>
 </html>

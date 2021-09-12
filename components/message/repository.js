@@ -13,8 +13,6 @@ const add = (message) => {
                 if (error) {
                     return reject(new Exception('Something went wrong!', error));
                 }
-
-                console.log(populated);
                 return resolve(populated);
             });
         });
