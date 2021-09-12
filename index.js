@@ -13,6 +13,8 @@ db(process.env.DB_URL);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static('public'));
+
 socket.connect(server);
 
 router(app);
