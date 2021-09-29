@@ -1,4 +1,10 @@
-const socket = io.connect('http://localhost:3000', {
+const apiUrl = 'http://localhost:3000';
+const endpoints = {
+    'users': '/user',
+    'messages': '/message',
+};
+
+const socket = io.connect(apiUrl, {
     forceNew: true,
 });
 
@@ -31,51 +37,31 @@ const app = new Vue({
             let container = document.getElementById('messages');
             container.scrollTop = container.scrollHeight;
         },
-        getUsers: function() {
-            fetch('http://localhost:3000/user')
-                .then(response => response.json())
-                .then(responseData => {
-                    if (!responseData.error && responseData.body) {
-                        this.users = responseData.body;
-                    } else {
-                        console.log(responseData.error);
-                    }
-                })
-                .catch(error => console.log(error));
+        getUsers: async function() {
+            try {
+                this.users = await getUsers();
+            } catch (error) {
+                console.error(error);
+            }
         },
-        getMessages: function() {
-            fetch('http://localhost:3000/message')
-                .then(response => response.json())
-                .then(responseData => {
-                    if (!responseData.error && responseData.body) {
-                        this.messages = responseData.body;
-                    } else {
-                        console.log(responseData.error);
-                    }
-                })
-                .catch(error => console.log(error));
+        getMessages: async function() {
+            try {
+                this.messages = await getMessages();
+            } catch (error) {
+                console.error(error);
+            }
         },
-        sendMessage: function() {
+        sendMessage: async function() {
             if (!this.user) {
                 return;
             }
-
-            const request = {
-                'message': `${this.newMessage}`,
-                'user': `${this.user}`,
-            };
-
-            fetch('http://localhost:3000/message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(request)
-            })
-            .then(response => this.newMessage = '')
-            .catch(error => {
-                console.log(error);
-            });
+            
+            try {
+                await addMessage(this.user, this.newMessage);
+                this.newMessage = '';
+            } catch (error) {
+                console.error(error);
+            }
         },
         isEmptyUser: function() {
             return !this.user;
@@ -89,3 +75,35 @@ const app = new Vue({
         }
     }
 });
+
+async function getUsers() {
+    return await getApiData(apiUrl + endpoints['users']);
+}
+
+async function getMessages() {
+    return await getApiData(apiUrl + endpoints['messages']);
+}
+
+async function addMessage(user, message) {
+    const request = {
+        'message': `${message}`,
+        'user': `${user}`,
+    };
+
+    await fetch(apiUrl + endpoints['messages'], {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(request)
+    });
+}
+
+async function getApiData(url) {
+    const response = await fetch(url);
+    const responseData = await response.json();
+    
+    if (responseData.error) {
+        throw responseData.error;   
+    }
+
+    return responseData.body;
+}
